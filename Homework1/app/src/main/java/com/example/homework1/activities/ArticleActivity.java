@@ -23,9 +23,14 @@ public class ArticleActivity extends AppCompatActivity {
 
     // Codes
     public static final String USERNAME_KEY = "username";
+    public static final String FAVORITE_BTN_TEXT = "btnText";
+    public static final String STAR_ICON = "starSrc";
+
 
     // Props
     private String username;
+    public static String btnText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class ArticleActivity extends AppCompatActivity {
         initListeners();
         parseIntent();
         initWelcomeMessage();
+        initBtnAndStar();
     }
 
     public void initView() {
@@ -46,6 +52,7 @@ public class ArticleActivity extends AppCompatActivity {
         articleText = findViewById(R.id.articleTv);
         favoriteBtn = findViewById(R.id.favoriteBtn);
         star = findViewById(R.id.starIcon);
+
         articleText.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ante ante, semper sit amet consectetur ac, rutrum ut risus. Cras fermentum felis at metus cursus, vel accumsan lectus feugiat. Vestibulum eget est eget turpis blandit luctus. Quisque feugiat facilisis sollicitudin. Nulla varius lacinia ipsum ac consequat. Maecenas pharetra scelerisque ex, et interdum arcu malesuada vitae. Donec sit amet odio euismod mauris laoreet maximus.\n" +
                 "\n" +
                 "Nullam in ante ac enim rhoncus facilisis sit amet non massa. In volutpat nisi a sagittis tempor. Sed ante arcu, sagittis id lectus eget, sollicitudin molestie nunc. Duis blandit malesuada augue a pretium. Quisque a tellus vel est aliquam blandit. Sed interdum enim vel porttitor ullamcorper. Suspendisse non posuere orci. Curabitur pellentesque efficitur nibh suscipit efficitur. Mauris euismod arcu sed sem vestibulum pretium. Sed tincidunt elit mollis massa gravida sollicitudin. Donec justo risus, suscipit eu massa tristique, suscipit ullamcorper ex. Nullam sed turpis non lorem porttitor accumsan sit amet eu purus. Nullam at commodo sem. Duis sit amet lectus placerat, faucibus orci in, iaculis nulla. Vestibulum ornare lectus sit amet massa iaculis maximus.\n" +
@@ -57,7 +64,18 @@ public class ArticleActivity extends AppCompatActivity {
 
     public void initListeners() {
         favoriteBtn.setOnClickListener(v -> {
-
+            SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+            String text = sharedPreferences.getString(FAVORITE_BTN_TEXT, "");
+            if (text.equals("Favorite")) {
+                text = "Unfavorite";
+            } else if (text.equals("Unfavorite")) {
+                text = "Favorite";
+            }
+            sharedPreferences
+                    .edit()
+                    .putString(FAVORITE_BTN_TEXT, text)
+                    .apply();
+            favoriteBtn.setText(text);
         });
     }
 
@@ -73,6 +91,32 @@ public class ArticleActivity extends AppCompatActivity {
 
     public void initWelcomeMessage() {
         welcomeMsg.setText("Welcome " + username + " here's an article of the day, do you like it?");
+    }
+
+    public void initBtnAndStar() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        String btnText = sharedPreferences.getString(FAVORITE_BTN_TEXT, null);
+        if (btnText == null) { // prvi put
+            sharedPreferences
+                    .edit()
+                    .putString(FAVORITE_BTN_TEXT, "Favorite")
+                    .apply();
+            sharedPreferences
+                    .edit()
+                    .putString(STAR_ICON, "ic_baseline_star_border_50")
+                    .apply();
+            favoriteBtn.setText("Favorite");
+            star.setImageResource(R.drawable.ic_baseline_star_border_50);
+        } else {
+            favoriteBtn.setText(btnText);
+            if (btnText.equals("Favorite")) {
+                star.setImageResource(R.drawable.ic_baseline_star_border_50);
+            } else {
+                star.setImageResource(R.drawable.ic_baseline_star_50);
+
+            }
+        }
+
     }
 
 }
