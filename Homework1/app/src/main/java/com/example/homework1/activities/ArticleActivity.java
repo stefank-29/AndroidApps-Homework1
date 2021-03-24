@@ -68,8 +68,10 @@ public class ArticleActivity extends AppCompatActivity {
             String text = sharedPreferences.getString(FAVORITE_BTN_TEXT, "");
             if (text.equals("Favorite")) {
                 text = "Unfavorite";
+                star.setImageResource(R.drawable.ic_baseline_star_50);
             } else if (text.equals("Unfavorite")) {
                 text = "Favorite";
+                star.setImageResource(R.drawable.ic_baseline_star_border_50);
             }
             sharedPreferences
                     .edit()
